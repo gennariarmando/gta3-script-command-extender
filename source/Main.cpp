@@ -32,8 +32,12 @@ public:
 
         tScriptParam* params = CTheScripts::ScriptParams;
         auto f = mapOfNewOpcodes.find(command);
-        if (f != mapOfNewOpcodes.end())
-            return f->second((int32_t*)params);
+        if (f != mapOfNewOpcodes.end()) {
+            script->CollectParameters((int32_t*)&script->m_nIp, 32);
+            auto ret = f->second((int32_t*)params);
+            script->StoreParameters((int32_t*)&script->m_nIp, 32);
+            return ret;
+        }
 
         script->m_nIp = m_nPrevIp;
         --CTheScripts::CommandsExecuted;
