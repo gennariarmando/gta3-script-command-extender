@@ -1,7 +1,7 @@
 #pragma once
 #include "ModuleList.hpp"
 
-class ScmExtenderAPI {
+class ScmExtender {
 private:
 struct ApiCALL {
 	static inline HMODULE h = nullptr;

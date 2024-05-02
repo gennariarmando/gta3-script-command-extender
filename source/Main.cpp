@@ -2,23 +2,20 @@
 #include "CRunningScript.h"
 #include "CTheScripts.h"
 #include "CMessages.h"
+//#include "ScmExtenderAPI.h"
 
-class __declspec(dllexport) ScmExtenderIII {
+class ScmExtender {
 public: 
     static inline std::unordered_map<int32_t, int8_t(*)(int32_t*)> mapOfNewOpcodes = {};
 
-    static void AddOneCommand(int32_t command, int8_t(*func)(int32_t*)) {
+    static __declspec(dllexport) void AddOneCommand(int32_t command, int8_t(*func)(int32_t*)) {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
 
         auto f = mapOfNewOpcodes.find(command);
+        if (f != mapOfNewOpcodes.end())
+            std::cout << "[SCRIPT] Command id " << command << " overwritten" << std::endl;
 
-        if (f == mapOfNewOpcodes.end()) {
-            assert("Command already defined");
-            std::cout << "Command:" << command << " " << "Already defined" << std::endl;
-        }
-        else {
-            mapOfNewOpcodes[command] = func;
-        }
+        mapOfNewOpcodes[command] = func;
     }
 
     static int8_t ProcessOneCommand(CRunningScript* script) {
@@ -45,7 +42,7 @@ public:
         return script->ProcessOneCommand();
     }
 
-    ScmExtenderIII() {
+    ScmExtender() {
         plugin::Events::initRwEvent += []() {
             CTheScripts::ScriptSpace = plugin::patch::Get<uint8_t*>(0x4387A0 + 3);
         };
@@ -80,4 +77,4 @@ public:
         };
         plugin::patch::RedirectCall(0x4393DF, LAMBDA(void, __fastcall, processScriptHook, CRunningScript*, void*));
     }
-} scmExtenderIII;
+} scmExtender;
