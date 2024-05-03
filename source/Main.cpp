@@ -18,6 +18,21 @@ public:
         mapOfNewOpcodes[command] = func;
     }
 
+    static inline CRunningScript* currentScript = nullptr;
+    static __declspec(dllexport) void CollectParams(int32_t count) {
+#pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
+
+        if (currentScript)
+            currentScript->CollectParameters(&currentScript->m_nIp, count);
+    }
+
+    static __declspec(dllexport) void StoreParams(int32_t count) {
+#pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
+
+        if (currentScript)
+            currentScript->StoreParameters(&currentScript->m_nIp, count);
+    }
+
     static int8_t ProcessOneCommand(CRunningScript* script) {
         ++CTheScripts::CommandsExecuted;
 
@@ -27,13 +42,11 @@ public:
         script->m_bNotFlag = (command & 0x8000);
         command &= 0x7FFF;
 
-        tScriptParam* params = CTheScripts::ScriptParams;
         auto f = mapOfNewOpcodes.find(command);
         if (f != mapOfNewOpcodes.end()) {
-            script->CollectParameters((int32_t*)&script->m_nIp, 32);
-            auto ret = f->second((int32_t*)params);
-            script->StoreParameters((int32_t*)&script->m_nIp, 32);
-            return ret;
+            currentScript = script;
+            tScriptParam* params = CTheScripts::ScriptParams;
+            return f->second((int32_t*)params);
         }
 
         script->m_nIp = m_nPrevIp;

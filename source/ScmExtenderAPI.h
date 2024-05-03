@@ -59,4 +59,12 @@ public:
 	static inline void AddOneCommand(int32_t command, int8_t (*func)(int32_t*)) {
 		ApiCALL::Call(__FUNCTION__, command, func);
 	}
+
+	static inline void CollectParams(int32_t count) {
+		ApiCALL::Call(__FUNCTION__, count);
+	}
+
+	static inline void StoreParams(int32_t count) {
+		ApiCALL::Call(__FUNCTION__, count);
+	}
 };
