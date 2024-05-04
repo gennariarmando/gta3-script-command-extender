@@ -67,4 +67,8 @@ public:
 	static inline void StoreParams(int32_t count) {
 		ApiCALL::Call(__FUNCTION__, count);
 	}
+
+	static inline void UpdateCompareFlag(uint8_t flag) {
+		ApiCALL::Call(__FUNCTION__, flag);
+	}
 };

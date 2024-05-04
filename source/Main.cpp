@@ -33,6 +33,13 @@ public:
             currentScript->StoreParameters(&currentScript->m_nIp, count);
     }
 
+    static __declspec(dllexport) void UpdateCompareFlag(uint8_t flag) {
+#pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
+
+        if (currentScript)
+            currentScript->UpdateCompareFlag(flag);
+    }
+
     static int8_t ProcessOneCommand(CRunningScript* script) {
         ++CTheScripts::CommandsExecuted;
 
